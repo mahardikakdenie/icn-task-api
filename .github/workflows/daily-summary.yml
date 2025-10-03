@@ -2,7 +2,7 @@ name: Daily Summary Cron
 
 on:
   schedule:
-    - cron: '42 19 * * *'  # Jam 00:00 WIB (17:00 UTC)
+    - cron: '0 17 * * *'  # Jam 00:00 WIB (17:00 UTC)
   workflow_dispatch:      # Untuk trigger manual via GitHub UI
 
 jobs:
