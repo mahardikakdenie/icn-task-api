@@ -1,0 +1,35 @@
+name: Daily Summary Cron
+
+on:
+  schedule:
+    - cron: '0 17 * * *'  # Jam 00:00 WIB (17:00 UTC)
+  workflow_dispatch:      # Untuk trigger manual via GitHub UI
+
+jobs:
+  trigger-daily-summary:
+    name: Trigger Supabase Daily Summary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Daily Summary Edge Function
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          echo "📡 Memanggil Supabase Edge Function: daily-summary"
+          
+          RESPONSE=$(curl -s -w "%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            -H "Content-Type: application/json" \
+            https://wandqgpedsfmmwjoebuq.supabase.co/functions/v1/daily-summary)
+          
+          HTTP_CODE="${RESPONSE: -3}"
+          BODY="${RESPONSE%???}"
+          
+          echo "HeaderCode: $HTTP_CODE"
+          echo "Response: $BODY"
+          
+          if [ "$HTTP_CODE" -ne 200 ]; then
+            echo "❌ Gagal memanggil cron job. HTTP Status: $HTTP_CODE"
+            exit 1
+          else
+            echo "✅ Cron job berhasil dipicu!"
+          fi
