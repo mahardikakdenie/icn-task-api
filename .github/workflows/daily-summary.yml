@@ -19,7 +19,7 @@ jobs:
           RESPONSE=$(curl -s -w "%{http_code}" \
             -H "Authorization: Bearer $CRON_SECRET" \
             -H "Content-Type: application/json" \
-            https://wandqgpedsfmmwjoebuq.supabase.co/functions/v1/daily-summary)
+            https://wandqgpedsfmmwjoebuq.supabase.co/functions/v1/clever-function)
           
           HTTP_CODE="${RESPONSE: -3}"
           BODY="${RESPONSE%???}"
