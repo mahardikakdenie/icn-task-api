@@ -49,7 +49,7 @@ export class TasksService {
 
     // Kirim notifikasi
     await this.mailerService.sendEmail(
-      'dikamahar884@gmail.com' as string, // ✅ benar: dari `profile.email`
+      'dikamahar884@gmail.com' as string,
       '✅ New Task Created',
       `You just created a new task: "${dto.title}"`,
     );
@@ -57,6 +57,18 @@ export class TasksService {
     return {
       code: task.status,
       status: task.statusText,
+    };
+  }
+
+  async updateTask(taskId: string, dto: CreateTaskDto) {
+    const task = await this.supabaseService
+      .getClient()
+      .from('tasks')
+      .update({ title: dto.title })
+      .eq('id', taskId);
+
+    return {
+      code: task.status,
     };
   }
 }
