@@ -13,8 +13,8 @@ export class TasksService {
   async findAll() {
     const { data, error } = await this.supabaseService
       .getClient()
-      .from('tasks')
-      .select('*', { count: 'exact' });
+      .from('taks')
+      .select('*');
 
     if (error) {
       return { error: error.message };
@@ -31,22 +31,21 @@ export class TasksService {
       .insert({ ...dto, user_id: userId });
 
     // Dapatkan email user
-    // Dapatkan email user
-    // const { data: profile, error } = await this.supabaseService
-    //   .getClient()
-    //   .from('profiles')
-    //   .select('email')
-    //   .eq('id', userId)
-    //   .single();
+    const { data: profile, error } = await this.supabaseService
+      .getClient()
+      .from('profiles')
+      .select('email')
+      .eq('id', userId)
+      .single();
 
-    // if (error) {
-    //   console.error('Failed to fetch user email:', error.message);
-    //   throw new Error('User profile not found');
-    // }
+    if (error) {
+      console.error('Failed to fetch user email:', error.message);
+      throw new Error('User profile not found');
+    }
 
-    // if (!profile) {
-    //   throw new Error('User profile does not exist');
-    // }
+    if (!profile) {
+      throw new Error('User profile does not exist');
+    }
 
     // Kirim notifikasi
     await this.mailerService.sendEmail(
