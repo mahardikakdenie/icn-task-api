@@ -54,6 +54,9 @@ export class TasksService {
       `You just created a new task: "${dto.title}"`,
     );
 
-    return task;
+    return {
+      code: task.status,
+      status: task.statusText,
+    };
   }
 }
