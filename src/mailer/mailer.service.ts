@@ -46,7 +46,7 @@ export class MailerService {
       try {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         await this.transporter.sendMail({
-          from: `noreply@ensiklotari.id`, // ganti dengan verified domain di Resnd
+          from: `noreply@ensiklotari.id`,
           to,
           subject,
           text,
