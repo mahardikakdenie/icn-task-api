@@ -60,15 +60,40 @@ export class TasksService {
     };
   }
 
-  async updateTask(taskId: string, dto: CreateTaskDto) {
+  async updateTask(taskId: string, userId: string, dto: CreateTaskDto) {
     const task = await this.supabaseService
       .getClient()
       .from('tasks')
-      .update({ title: dto.title })
+      .update(dto)
       .eq('id', taskId);
+
+    // Dapatkan email user
+    const { data: profile, error } = await this.supabaseService
+      .getClient()
+      .from('profiles')
+      .select('email')
+      .eq('id', userId)
+      .single();
+
+    if (error) {
+      console.error('Failed to fetch user email:', error.message);
+      throw new Error('User profile not found');
+    }
+
+    if (!profile) {
+      throw new Error('User profile does not exist');
+    }
+
+    // Kirim notifikasi
+    await this.mailerService.sendEmail(
+      'dikamahar884@gmail.com' as string,
+      '✅ New Task Created',
+      `You just created a new task: "${dto.title}"`,
+    );
 
     return {
       code: task.status,
+      status: task.statusText,
     };
   }
 }

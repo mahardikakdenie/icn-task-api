@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 // src/task/dto/create-task.dto.ts
-import { IsString, IsOptional, IsIn } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 
 export class CreateTaskDto {
   @IsString()
@@ -11,9 +11,8 @@ export class CreateTaskDto {
   description?: string;
 
   @IsString()
-  @IsIn(['Todo', 'In Progress', 'Done'])
   @IsOptional()
-  status?: 'Todo' | 'In Progress' | 'Done' = 'Todo';
+  status?: string;
 
   @IsString()
   @IsOptional()
