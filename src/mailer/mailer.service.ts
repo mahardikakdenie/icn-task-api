@@ -1,6 +1,9 @@
-/* eslint-disable prettier/prettier */
-// eslint-disable-next-line prettier/prettier
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 // src/mailer/mailer.service.ts
+import { config } from 'dotenv'; // ← tambahkan ini
+config(); // ← muat .env
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { SupabaseService } from '../supabase/supabase.service';
@@ -10,6 +13,14 @@ export class MailerService {
   private transporter: nodemailer.Transporter | null = null;
 
   constructor(private supabaseService: SupabaseService) {
+    console.log(
+      'check ',
+      process.env.SMTP_HOST &&
+        process.env.SMTP_PORT &&
+        process.env.SMTP_USER &&
+        process.env.SMTP_PASS,
+    );
+
     // Cek apakah konfigurasi SMTP tersedia
     if (
       process.env.SMTP_HOST &&
@@ -17,36 +28,34 @@ export class MailerService {
       process.env.SMTP_USER &&
       process.env.SMTP_PASS
     ) {
-      this.transporter = nodemailer.createTransporter({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      this.transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT, 10),
         auth: {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS,
         },
-        secure: process.env.SMTP_PORT === '465', // true untuk port 465
+        secure: false, // true hanya untuk port 465
       });
     }
   }
 
-  /**
-   * Kirim email notifikasi
-   * Jika SMTP tidak tersedia → simpan ke tabel `email_logs`
-   */
   async sendEmail(to: string, subject: string, text: string): Promise<void> {
     if (this.transporter) {
-      // ✅ Kirim via SMTP
       try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         await this.transporter.sendMail({
-          from: `"TaskBoard" <${process.env.SMTP_USER}>`,
+          from: `noreply@ensiklotari.id`, // ganti dengan verified domain di Resnd
           to,
           subject,
           text,
         });
-        console.log(`📧 Email terkirim ke ${to}`);
+        console.log(`✅ Email terkirim ke ${to}`);
       } catch (error) {
-        console.error('❌ Gagal kirim email via SMTP:', error);
-        // Fallback ke mock jika SMTP error
+        console.error('📧 Gagal kirim email:', error);
+        // Fallback ke mock jika error
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         await this.logToDatabase(to, subject, text, error.message);
       }
     } else {
@@ -55,9 +64,6 @@ export class MailerService {
     }
   }
 
-  /**
-   * Simpan log email ke tabel `email_logs` di Supabase
-   */
   private async logToDatabase(
     to: string,
     subject: string,
@@ -70,9 +76,8 @@ export class MailerService {
         to,
         subject,
         body,
-        error, // opsional: catat error jika ada
+        error,
       });
-      console.log(`📝 Email log disimpan untuk ${to}`);
     } catch (dbError) {
       console.error('❌ Gagal simpan ke email_logs:', dbError);
     }
