@@ -13,14 +13,6 @@ export class MailerService {
   private transporter: nodemailer.Transporter | null = null;
 
   constructor(private supabaseService: SupabaseService) {
-    console.log(
-      'check ',
-      process.env.SMTP_HOST &&
-        process.env.SMTP_PORT &&
-        process.env.SMTP_USER &&
-        process.env.SMTP_PASS,
-    );
-
     // Cek apakah konfigurasi SMTP tersedia
     if (
       process.env.SMTP_HOST &&
