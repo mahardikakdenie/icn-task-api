@@ -3,6 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
   InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { SupabaseService } from '../supabase/supabase.service';
 import { LoginDto } from './auth.dto';
@@ -78,6 +79,60 @@ export class AuthService {
         throw err;
       }
       console.error('Login error:', err);
+      throw new InternalServerErrorException('Authentication service error');
+    }
+  }
+
+  async register(email: string, password: string) {
+    try {
+      // Check User
+      const { data: user, error: errorFetchedUser } = await this.supabaseService
+        .getClient()
+        .from('profiles')
+        .select('email')
+        .eq('email', email);
+
+      if (errorFetchedUser) {
+        // errorFetchedUser dari Supabase (misal: email sudah terdaftar, password lemah)
+        throw new BadRequestException(
+          `users failed : ${errorFetchedUser.message}`,
+        );
+      }
+
+      if (user.length > 0) {
+        console.log('user', user);
+
+        throw new BadRequestException('Email Sudah Terpakai');
+      }
+
+      const { data, error } = await this.supabaseService
+        .getClient()
+        .auth.signUp({
+          email,
+          password,
+        });
+
+      if (error) {
+        // Error dari Supabase (misal: email sudah terdaftar, password lemah)
+        throw new BadRequestException(error.message || 'Registration failed');
+      }
+
+      return {
+        success: true,
+        message: 'Registration successful. Please check your email to confirm.',
+        user: {
+          email: data.user?.email,
+          id: data.user?.id,
+        },
+      };
+    } catch (err) {
+      if (
+        err instanceof BadRequestException ||
+        err instanceof UnauthorizedException
+      ) {
+        throw err;
+      }
+      console.error('Registration error:', err);
       throw new InternalServerErrorException('Authentication service error');
     }
   }

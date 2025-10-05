@@ -11,3 +11,13 @@ export class LoginDto {
   @IsNotEmpty({ message: 'Password wajib diisi' })
   password: string;
 }
+
+export class RegisterDto {
+  @IsEmail({}, { message: 'Email harus valid' })
+  @IsNotEmpty({ message: 'Email wajib diisi' })
+  email: string;
+
+  @IsString()
+  @IsNotEmpty({ message: 'Password wajib diisi' })
+  password: string;
+}
