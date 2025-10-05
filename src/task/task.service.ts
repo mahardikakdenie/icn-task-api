@@ -106,4 +106,19 @@ export class TasksService {
       data: currentTask,
     };
   }
+
+  async deleteTask(taskId: string) {
+    const { data, error } = await this.supabaseService
+      .getClient()
+      .from('tasks')
+      .delete()
+      .eq('id', taskId);
+
+    if (error) {
+      console.error('Failed to delete:', error.message);
+      throw new Error('Failed to delete task');
+    }
+
+    return data;
+  }
 }

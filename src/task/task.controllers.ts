@@ -3,6 +3,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -58,5 +59,12 @@ export class TasksController {
     );
 
     return updatedTask;
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  async deleteTask(@Param('id') taskId: string) {
+    return this.tasksService.deleteTask(taskId);
   }
 }
