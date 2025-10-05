@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 // src/task/dto/create-task.dto.ts
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsArray } from 'class-validator';
 
 export class CreateTaskDto {
   @IsString()
@@ -17,4 +17,12 @@ export class CreateTaskDto {
   @IsString()
   @IsOptional()
   due_date?: string; // format: YYYY-MM-DD
+
+  @IsString()
+  @IsOptional()
+  priority?: string;
+
+  @IsArray()
+  @IsOptional()
+  subtasks?: { id: string; title: string; completed: string }[];
 }

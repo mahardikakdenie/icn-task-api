@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { MailerService } from 'src/mailer/mailer.service';
 import { SupabaseService } from 'src/supabase/supabase.service';
 import { CreateTaskDto } from './task.dto';
+import { PostgrestSingleResponse } from '@supabase/supabase-js';
 
 @Injectable()
 export class TasksService {
@@ -13,14 +14,14 @@ export class TasksService {
   async findAll() {
     const { data, error } = await this.supabaseService
       .getClient()
-      .from('taks')
+      .from('tasks')
       .select('*');
 
     if (error) {
       return { error: error.message };
     }
 
-    return { count: data };
+    return { data: data };
   }
 
   // src/task/task.service.ts
@@ -61,6 +62,14 @@ export class TasksService {
   }
 
   async updateTask(taskId: string, userId: string, dto: CreateTaskDto) {
+    const { data: currentTask }: PostgrestSingleResponse<CreateTaskDto> =
+      await this.supabaseService
+        .getClient()
+        .from('tasks')
+        .select('*')
+        .eq('id', taskId)
+        .single();
+
     const task = await this.supabaseService
       .getClient()
       .from('tasks')
@@ -87,13 +96,14 @@ export class TasksService {
     // Kirim notifikasi
     await this.mailerService.sendEmail(
       'dikamahar884@gmail.com' as string,
-      '✅ New Task Created',
-      `You just created a new task: "${dto.title}"`,
+      '✅ Updated Task Created',
+      `Update Task Successfully With title: "${currentTask?.title ?? ''} to ${dto.title} and status ${dto.status}"`,
     );
 
     return {
       code: task.status,
       status: task.statusText,
+      data: currentTask,
     };
   }
 }

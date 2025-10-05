@@ -1,11 +1,14 @@
 // src/tasks/tasks.controller.ts
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
+  Put,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -32,5 +35,28 @@ export class TasksController {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const userId: string = req?.user.id as string; // ID user dari JWT
     return await this.tasksService.createTask(userId, createTaskDto);
+  }
+
+  @UseGuards(AuthGuard)
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
+  async updateTask(
+    @Param('id') taskId: string,
+    @Body() updateTaskDto: CreateTaskDto, // pertimbangkan ganti nama DTO
+    @Request() req,
+  ) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const userId: string = req.user?.id as string;
+    if (!taskId) {
+      throw new BadRequestException('Task ID is required');
+    }
+
+    const updatedTask = await this.tasksService.updateTask(
+      taskId,
+      userId,
+      updateTaskDto,
+    );
+
+    return updatedTask;
   }
 }
