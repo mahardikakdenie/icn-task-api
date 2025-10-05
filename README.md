@@ -110,7 +110,10 @@ SMTP_PASS=re_...
 | Method | Endpoint             | Description                        | Auth Required |
 |--------|----------------------|------------------------------------|---------------|
 | POST   | `/auth/login`        | Authenticate user                  | ❌            |
+| POST   | `/auth/register`     | Register user                      | ❌            |
 | POST   | `/tasks`             | Create new task + send notification| ✅            |
+| PUT    | `/tasks/:id`         | Update task + send notification    | ✅            |
+| Delete | `/tasks/:id`         | Delete task + send notification    | ✅            |
 | GET    | `/ai/suggest`        | Get 3 AI-generated task suggestions| ✅            |
 
 > All authenticated endpoints require:  
