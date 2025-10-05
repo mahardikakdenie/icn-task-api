@@ -186,5 +186,12 @@ Thank you for reviewing my submission. I’ve designed this solution to be **cle
 
 ---
 
+---
+
+> 💡 **Note on OpenAI**:  
+> Due to OpenAI's $5 credit expiration, the AI endpoint uses **mock responses**. The code structure is ready for real OpenAI integration — just add a valid `OPENAI_API_KEY`.
+
+---
+
 > ✨ **Happy coding!**  
 > — Mahardika Kessuma Denie
