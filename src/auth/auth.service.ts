@@ -136,4 +136,25 @@ export class AuthService {
       throw new InternalServerErrorException('Authentication service error');
     }
   }
+
+  // Tambahkan method logout di akhir class AuthService
+  async logout(
+    accessToken: string,
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      await this.supabaseService.getClient().auth.signOut();
+
+      console.log(
+        `User logged out (token: ${accessToken.substring(0, 10)}...)`,
+      );
+
+      return {
+        success: true,
+        message: 'Logged out successfully',
+      };
+    } catch (err) {
+      console.error('Logout error:', err);
+      throw new InternalServerErrorException('Logout service error');
+    }
+  }
 }
