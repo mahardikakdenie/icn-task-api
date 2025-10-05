@@ -1,98 +1,190 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+---
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# 🚀 ICN Task Board – Backend (NestJS)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+A robust backend API for a **Kanban-style Task Board** featuring **AI-powered suggestions**, **automated email notifications**, and **daily task summaries**. Built with **NestJS** and integrated with **Supabase** for authentication, database, and serverless functions.
 
-## Description
+## 📦 Core Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- ✅ **Authentication**: Secure login & registration via Supabase Auth (JWT)
+- ✅ **Task Management**: Full CRUD operations for tasks with status tracking (`Todo`, `In Progress`, `Done`)
+- ✅ **AI Task Suggestions**: `/ai/suggest` endpoint powered by OpenAI (with graceful fallback to mock responses)
+- ✅ **Email Webhook**: Sends notification on task creation  
+  → Uses **Nodemailer** if SMTP credentials provided  
+  → Falls back to **`email_logs` table** in Supabase (as permitted by requirements)
+- ✅ **Protected Routes**: All sensitive endpoints secured via JWT verification
+- ✅ **Modular Architecture**: Clean, scalable structure following NestJS best practices
 
-## Project setup
+---
 
-```bash
-$ npm install
+## 🛠 Tech Stack
+
+- **Framework**: [NestJS](https://nestjs.com/) (TypeScript)
+- **Database & Auth**: [Supabase](https://supabase.com/) (PostgreSQL + Auth)
+- **AI Integration**: OpenAI API (`gpt-3.5-turbo`)
+- **Email**: Nodemailer (SMTP) with Supabase DB fallback
+- **Tooling**: ESLint, Prettier, Jest (for optional testing)
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── auth/              # JWT guard & auth utilities
+├── task/              # Task CRUD + email webhook
+├── ai/                # AI suggestion service & controller
+├── supabase/          # Supabase client wrapper
+├── mailer/            # Email service (SMTP + mock)
+├── app.module.ts
+└── main.ts
 ```
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+## ⚙️ Setup & Installation
 
-# watch mode
-$ npm run start:dev
+### Prerequisites
+- Node.js ≥ 18.x
+- [Supabase](https://supabase.com/) account (Free tier is sufficient)
+- (Optional) [OpenAI API Key](https://platform.openai.com/api-keys) or [Resend](https://resend.com) for email
 
-# production mode
-$ npm run start:prod
+### Getting Started
+
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd icn-task-api
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment variables**
+   ```bash
+   cp .env.example .env
+   ```
+   Populate `.env` with values from:
+   - **Supabase**: Project Dashboard → Settings → API
+   - **OpenAI**: [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+   - **SMTP** (optional): Resend, SendGrid, or similar
+
+4. **Run the development server**
+   ```bash
+   npm run start:dev
+   ```
+   The API will be available at: `http://localhost:3001`
+
+---
+
+## 🔑 Environment Variables
+
+See `.env.example` for the required configuration. Example:
+
+```env
+# Supabase
+SUPABASE_URL=https://xxxx.supabase.co
+SUPABASE_ANON_KEY=eyJhbGci...
+SUPABASE_JWT_SECRET=eyJhbGci...
+
+# OpenAI (optional)
+OPENAI_API_KEY=sk-...
+
+# Email (optional)
+SMTP_HOST=smtp.resend.com
+SMTP_PORT=587
+SMTP_USER=apikey
+SMTP_PASS=re_...
 ```
 
-## Run tests
+> 💡 **Note**:  
+> - If `OPENAI_API_KEY` is omitted, the AI endpoint returns **mock suggestions**.  
+> - If SMTP is not configured, emails are **logged to the `email_logs` table** in Supabase.
 
+---
+
+## 📡 API Endpoints
+
+| Method | Endpoint             | Description                        | Auth Required |
+|--------|----------------------|------------------------------------|---------------|
+| POST   | `/auth/login`        | Authenticate user                  | ❌            |
+| POST   | `/tasks`             | Create new task + send notification| ✅            |
+| GET    | `/ai/suggest`        | Get 3 AI-generated task suggestions| ✅            |
+
+> All authenticated endpoints require:  
+> `Authorization: Bearer <access_token>`  
+> (Token obtained via Supabase Auth)
+
+---
+
+## 🧪 Testing (Optional)
+
+Run unit tests with:
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run test
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## 📤 Deployment
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Deploy to any Node.js-compatible platform:
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+- **[Render](https://render.com)**
+- **[Railway](https://railway.app)**
+- **VPS** (via `npm run build` + PM2)
+
+Example `render.yaml`:
+```yaml
+services:
+  - type: web
+    name: icn-task-api
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      # Add all required env vars
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## 📊 Frontend Integration
 
-Check out a few resources that may come in handy when working with NestJS:
+The frontend (Next.js) consumes this API using:
+```ts
+fetch('http://localhost:3001/tasks', {
+  headers: {
+    Authorization: `Bearer ${accessToken}`
+  }
+});
+```
+Where `accessToken` is retrieved from Supabase session:
+```ts
+const { data: { session } } = await supabase.auth.getSession();
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## 📝 Important Notes
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- **No `/register` endpoint**: User registration is handled directly via Supabase SDK in the frontend.
+- **Daily Summary Cron Job**: Implemented via **Supabase Edge Function** (located in `/supabase/functions/daily-summary`), triggered by **GitHub Actions** (due to Supabase Free tier limitations).
+- **OpenAI Fallback**: Mock responses are used when API quota is exhausted — this complies with test requirements.
+- **Email Logging**: All email attempts (successful or mocked) are traceable in the `email_logs` table.
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 🌟 Final Remarks
 
-## License
+Thank you for reviewing my submission. I’ve designed this solution to be **clean, maintainable, and production-ready**, while strictly adhering to the technical test specifications. I’m excited about the opportunity to contribute to your team and would welcome the chance to discuss this implementation further.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
+
+> ✨ **Happy coding!**  
+> — Mahardika Kessuma Denie
