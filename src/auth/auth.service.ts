@@ -1,4 +1,6 @@
 // src/auth/auth.service.ts
+import { config } from 'dotenv'; // ← tambahkan ini
+config();
 import {
   Injectable,
   UnauthorizedException,

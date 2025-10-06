@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 // src/mailer/mailer.service.ts
 import { config } from 'dotenv'; // ← tambahkan ini
@@ -20,7 +18,6 @@ export class MailerService {
       process.env.SMTP_USER &&
       process.env.SMTP_PASS
     ) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       this.transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT, 10),
@@ -36,7 +33,6 @@ export class MailerService {
   async sendEmail(to: string, subject: string, text: string): Promise<void> {
     if (this.transporter) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         await this.transporter.sendMail({
           from: `noreply@ensiklotari.id`,
           to,
