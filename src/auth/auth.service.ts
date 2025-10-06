@@ -110,6 +110,10 @@ export class AuthService {
         .auth.signUp({
           email,
           password,
+          options: {
+            emailRedirectTo:
+              process.env.EMAIL_REDIRECT_TO || 'http://localhost:3002',
+          },
         });
 
       if (error) {
